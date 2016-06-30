@@ -3,6 +3,7 @@ This is a collection of (simplified) problems that we face at Hipmunk.
 
 - [Building a Flight Search API](https://github.com/Hipmunk/hipproblems/tree/master/searchrunner)
 - [Implementing a Distributed Work Queue](https://github.com/Hipmunk/hipproblems/tree/master/workqueue)
+- [Grouping digits in a locale-aware way](https://github.com/Hipmunk/hipproblems/tree/master/groupdigits)
 
 # Installation
 
