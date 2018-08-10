@@ -15,13 +15,18 @@ def test_flight_search():
     resp = requests.get("http://localhost:8000/flights/search")
     results = resp.json()["results"]
 
-    provider_counts = Counter()
-    for result in results:
-        provider_counts[result["provider"]] += 1
+    provider_counts = {}
+    for provider in EXPECTED_COUNTS.keys():
+        provider = provider.lower()
+        for result in results:
+            if result["provider"] == provider:
+                provider_counts[provider] += 1
+        if len(provider_counts) <= 1:
+            print "WARNING: Results do not include %s" % (provider)
 
-    for provider, count in provider_counts.most_common():
+    for provider, count in provider_counts:
         expected = EXPECTED_COUNTS[provider]
-        assert count == expected, "%s results missing for %s" % (
+        assert count == expected, "%s results incomplete for %s" % (
             expected - count,
             provider,
         )
