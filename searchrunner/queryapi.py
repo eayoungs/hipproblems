@@ -1,15 +1,17 @@
 from __future__ import print_function
 from tornado import gen, web, ioloop
 
+import json
 
-class GenAsyncHandler(web.RequestHandler):
+
+class FlightMetaSearchHandler(web.RequestHandler):
     @gen.coroutine
     def get(self):
-        print("flights/search")
+        self.write(json.dumps({"results": [{"provider": "Expedia"}]}))
 
 
 ROUTES = [
-    (r"/flights/search", GenAsyncHandler),
+    (r"/flights/search", FlightMetaSearchHandler),
 ]
 
 
