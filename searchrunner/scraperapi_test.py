@@ -1,4 +1,4 @@
-from collections import Counter
+from __future__ import print_function
 import requests
 
 
@@ -22,11 +22,11 @@ def test_flight_search():
             if result["provider"] == provider:
                 provider_counts[provider] += 1
         if len(provider_counts) <= 1:
-            print "WARNING: Results do not include %s" % (provider)
+            print("WARNING: Results do not include {}".format(provider))
 
     for provider, count in provider_counts:
         expected = EXPECTED_COUNTS[provider]
-        assert count == expected, "%s results incomplete for %s" % (
+        assert count == expected, "{} results incomplete for {}".format(
             expected - count,
             provider,
         )
@@ -42,7 +42,7 @@ def test_flight_search():
     else:
         msg += " Looks good!"
 
-    print msg
+    print(msg)
 
 
 if __name__ == "__main__":
