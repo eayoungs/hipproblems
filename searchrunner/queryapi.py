@@ -17,11 +17,11 @@ class FlightMetaSearchHandler(web.RequestHandler):
         for provider in self.providers:
             resp = yield search_provider_flight(provider)
             if resp.body and (not resp.body.isspace()):
-                resp_list.append(json.loads(resp.body))
-        # response = sorted(resp_list, key=lambda r: r["agony"])
+                resp_list = resp_list + json.loads(resp.body)['results']
+        response = sorted(resp_list, key=lambda r: r["agony"])
+        resp_dict = {'results': response}
 
-        print([resp['results'][0]['provider'] for resp in resp_list])
-        self.write(resp_list[0])  # response)
+        self.write(resp_dict)
 
 
 @gen.coroutine
