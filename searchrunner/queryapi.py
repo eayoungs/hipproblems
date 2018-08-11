@@ -1,22 +1,24 @@
 from __future__ import print_function
 from tornado import gen, web, ioloop
 from tornado.httpclient import AsyncHTTPClient
-from searchrunner.scrapers import get_scraper
 
 
 class FlightMetaSearchHandler(web.RequestHandler):
+    def initialize(self, provider):
+        self.provider = provider
+
     @gen.coroutine
-    def get(self, *providers):
+    def get(self):
         http_client = AsyncHTTPClient()
         response = yield http_client.fetch(
-            'http://localhost:9000/scrapers/expedia')
+            'http://localhost:9000/scrapers/' + self.provider)
 
         # print(response.body)
         self.write(response.body)
 
 
 ROUTES = [
-    (r"/flights/search", FlightMetaSearchHandler),
+    (r"/flights/search", FlightMetaSearchHandler, dict(provider='expedia')),
 ]
 
 
