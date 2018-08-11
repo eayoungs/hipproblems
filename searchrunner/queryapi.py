@@ -1,4 +1,5 @@
 from __future__ import print_function
+import sys
 
 import json
 
@@ -7,30 +8,38 @@ from tornado.httpclient import AsyncHTTPClient
 
 
 class FlightMetaSearchHandler(web.RequestHandler):
-    def initialize(self, provider):
-        self.provider = provider
+    def initialize(self, providers):
+        self.providers = providers
 
     @gen.coroutine
     def get(self):
-        resp = yield search_provider_flight(self.provider)
-        resp_dict = json.loads(resp.body)
+        resp_list = []
+        for provider in self.providers:
+            resp = yield search_provider_flight(provider)
+            if resp.body and (not resp.body.isspace()):
+                resp_list.append(json.loads(resp.body))
+        # response = sorted(resp_list, key=lambda r: r["agony"])
 
-        self.write(resp_dict)
+        print([resp['results'][0]['provider'] for resp in resp_list])
+        self.write(resp_list[0])  # response)
 
 
 @gen.coroutine
 def search_provider_flight(provider):
     http_client = AsyncHTTPClient()
-    response = yield http_client.fetch(
-        'http://localhost:9000/scrapers/' + provider)
-    if not response:
-        raise web.HTTPError(404)
+    try:
+        response = yield http_client.fetch(
+            'http://localhost:9000/scrapers/' + provider)
+    except Exception as e:
+        print(e)
+        sys.exit(1)
 
     raise gen.Return(response)
 
 
 ROUTES = [
-    (r"/flights/search", FlightMetaSearchHandler, dict(provider='expedia')),
+    (r"/flights/search", FlightMetaSearchHandler, dict(
+        providers=['expedia', 'orbitz', 'priceline', 'travelocity', 'united'])),
 ]
 
 
