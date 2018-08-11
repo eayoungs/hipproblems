@@ -21,7 +21,7 @@ def test_flight_search():
         for result in results:
             if result["provider"] == provider:
                 provider_counts[provider] += 1
-        if len(provider_counts) <= 1:
+        if len(provider_counts) < 1:
             print("WARNING: Results do not include {}".format(provider))
 
     for provider, count in provider_counts:

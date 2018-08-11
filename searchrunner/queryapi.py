@@ -1,4 +1,7 @@
 from __future__ import print_function
+
+import json
+
 from tornado import gen, web, ioloop
 from tornado.httpclient import AsyncHTTPClient
 
@@ -9,12 +12,21 @@ class FlightMetaSearchHandler(web.RequestHandler):
 
     @gen.coroutine
     def get(self):
-        http_client = AsyncHTTPClient()
-        response = yield http_client.fetch(
-            'http://localhost:9000/scrapers/' + self.provider)
+        resp = yield search_provider_flight(self.provider)
+        resp_dict = json.loads(resp.body)
 
-        # print(response.body)
-        self.write(response.body)
+        self.write(resp_dict)
+
+
+@gen.coroutine
+def search_provider_flight(provider):
+    http_client = AsyncHTTPClient()
+    response = yield http_client.fetch(
+        'http://localhost:9000/scrapers/' + provider)
+    if not response:
+        raise web.HTTPError(404)
+
+    raise gen.Return(response)
 
 
 ROUTES = [
