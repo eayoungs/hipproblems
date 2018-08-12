@@ -1,10 +1,8 @@
 from __future__ import print_function
-import sys
-
 import json
 
 from tornado import gen, web, ioloop
-from tornado.httpclient import AsyncHTTPClient
+from searchrunner.scrapers.common import Query
 
 
 class FlightMetaSearchHandler(web.RequestHandler):
@@ -13,9 +11,10 @@ class FlightMetaSearchHandler(web.RequestHandler):
 
     @gen.coroutine
     def get(self):
+        query = Query()
         resp_list = []
         try:
-            resp_dict = yield search_provider_flight(self.providers)
+            resp_dict = yield query.search_provider_flight(self.providers)
         except:
             raise
         for resp in resp_dict.values():
@@ -25,22 +24,6 @@ class FlightMetaSearchHandler(web.RequestHandler):
             combined_resp_dict = {'results': response}
 
         self.write(combined_resp_dict)
-
-
-@gen.coroutine
-def search_provider_flight(providers):
-    http_client = AsyncHTTPClient()
-    try:
-        fetch_dict = {}
-        for provider in providers:
-            fetch_dict[provider] = http_client.fetch(
-                'http://localhost:9000/scrapers/' + provider)
-        resp_dict = yield fetch_dict
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-
-    raise gen.Return(resp_dict)
 
 
 ROUTES = [

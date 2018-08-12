@@ -1,5 +1,9 @@
+from __future__ import print_function
+import sys
+
 from datetime import datetime, timedelta
 from tornado import gen
+from tornado.httpclient import AsyncHTTPClient
 
 
 class FlightResult(object):
@@ -71,3 +75,22 @@ class Scraper(object):
             arrive_time,
         )
         self.results.append(result)
+
+
+class Query(Scraper):
+    """"  """
+    @gen.coroutine
+    def search_provider_flight(self, providers):
+        """  """
+        http_client = AsyncHTTPClient()
+        try:
+            fetch_dict = {}
+            for provider in providers:
+                fetch_dict[provider] = http_client.fetch(
+                    'http://localhost:9000/scrapers/' + provider)
+            resp_dict = yield fetch_dict
+        except Exception as e:
+            print(e)
+            sys.exit(1)
+
+        raise gen.Return(resp_dict)
