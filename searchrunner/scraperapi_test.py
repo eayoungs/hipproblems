@@ -1,4 +1,5 @@
 from __future__ import print_function
+from collections import Counter
 import requests
 
 
@@ -15,16 +16,16 @@ def test_flight_search():
     resp = requests.get("http://localhost:8000/flights/search")
     results = resp.json()["results"]
 
-    provider_counts = {}
-    for provider in EXPECTED_COUNTS.keys():
-        provider = provider.lower()
-        for result in results:
-            if result["provider"] == provider:
-                provider_counts[provider] += 1
-        if len(provider_counts) < 1:
-            print("WARNING: Results do not include {}".format(provider))
+    provider_counts = Counter()
+    providers = []
+    for result in results:
+        provider_counts[result["provider"]] += 1
+        providers.append(result["provider"])
 
-    for provider, count in provider_counts:
+    for provider, count in provider_counts.most_common():
+        assert provider in providers, "Results not found for {}".format(
+            provider
+        )
         expected = EXPECTED_COUNTS[provider]
         assert count == expected, "{} results incomplete for {}".format(
             expected - count,
