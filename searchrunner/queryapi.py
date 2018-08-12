@@ -14,27 +14,33 @@ class FlightMetaSearchHandler(web.RequestHandler):
     @gen.coroutine
     def get(self):
         resp_list = []
-        for provider in self.providers:
-            resp = yield search_provider_flight(provider)
+        try:
+            resp_dict = yield search_provider_flight(self.providers)
+        except:
+            raise
+        for resp in resp_dict.values():
             if resp.body and (not resp.body.isspace()):
                 resp_list = resp_list + json.loads(resp.body)['results']
-        response = sorted(resp_list, key=lambda r: r["agony"])
-        resp_dict = {'results': response}
+            response = sorted(resp_list, key=lambda r: r["agony"])
+            combined_resp_dict = {'results': response}
 
-        self.write(resp_dict)
+        self.write(combined_resp_dict)
 
 
 @gen.coroutine
-def search_provider_flight(provider):
+def search_provider_flight(providers):
     http_client = AsyncHTTPClient()
     try:
-        response = yield http_client.fetch(
-            'http://localhost:9000/scrapers/' + provider)
+        fetch_dict = {}
+        for provider in providers:
+            fetch_dict[provider] = http_client.fetch(
+                'http://localhost:9000/scrapers/' + provider)
+        resp_dict = yield fetch_dict
     except Exception as e:
         print(e)
         sys.exit(1)
 
-    raise gen.Return(response)
+    raise gen.Return(resp_dict)
 
 
 ROUTES = [
