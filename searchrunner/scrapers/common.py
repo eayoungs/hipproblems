@@ -80,7 +80,49 @@ class Scraper(object):
 class Query(Scraper):
     """"  """
     @gen.coroutine
-    def search_provider_flight(self, providers):
+    def run(self, providers):
+        """  """
+        self.results = []
+
+        # wait a bit
+        yield gen.sleep(2)
+
+        self.load_results(providers)
+        self.results.sort(key=lambda r: r.agony)
+
+        raise gen.Return(self.results)
+
+    def load_results(self, providers):
+        """  """
+        for provider in providers:
+            response = yield self.query_providers_flights(providers)
+            for key, value in response:
+                provider = value['provider']
+                price = value['price']
+                flight_num = value['flight_num']
+                depart_time = value['depart_time']
+                arrive_time = value['arrive_time']
+                self.add_result(
+                    provider,
+                    price,
+                    flight_num,
+                    depart_time,
+                    arrive_time,
+                )
+
+    def add_result(self, provider, price, flight_num,
+                   depart_time, arrive_time):
+        result = FlightResult(
+            provider,
+            price,
+            flight_num,
+            depart_time,
+            arrive_time,
+        )
+        self.results.append(result)
+
+    @gen.coroutine
+    def query_providers_flights(self, providers):
         """  """
         http_client = AsyncHTTPClient()
         try:

@@ -1,5 +1,4 @@
 from __future__ import print_function
-import json
 
 from tornado import gen, web, ioloop
 from searchrunner.scrapers.common import Query
@@ -12,18 +11,10 @@ class FlightMetaSearchHandler(web.RequestHandler):
     @gen.coroutine
     def get(self):
         query = Query()
-        resp_list = []
-        try:
-            resp_dict = yield query.search_provider_flight(self.providers)
-        except:
-            raise
-        for resp in resp_dict.values():
-            if resp.body and (not resp.body.isspace()):
-                resp_list = resp_list + json.loads(resp.body)['results']
-            response = sorted(resp_list, key=lambda r: r["agony"])
-            combined_resp_dict = {'results': response}
-
-        self.write(combined_resp_dict)
+        results = yield query.run(self.providers)
+        self.write({
+            "results": [r.serialize() for r in results],
+        })
 
 
 ROUTES = [
