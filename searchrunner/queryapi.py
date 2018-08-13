@@ -11,15 +11,28 @@ class FlightMetaSearchHandler(web.RequestHandler):
     @gen.coroutine
     def get(self):
         query = Query()
-        results = yield query.run(self.providers)
-        self.write({
-            "results": [r.serialize() for r in results],
-        })
+        try:
+            results = yield query.run_all(self.providers)
+            self.write({
+                "results": [r.serialize() for r in results],
+            })
+        except:
+            raise
+
+    def handle_responses(response):
+        pass
 
 
 ROUTES = [
     (r"/flights/search", FlightMetaSearchHandler, dict(
-        providers=['expedia', 'orbitz', 'priceline', 'travelocity', 'united'])),
+        providers=['expedia',
+                   'orbitz',
+                   'priceline',
+                   'travelocity',
+                   'united'
+                   ]
+        )
+    ),
 ]
 
 
