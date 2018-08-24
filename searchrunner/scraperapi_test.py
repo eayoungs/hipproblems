@@ -16,6 +16,8 @@ def test_flight_search():
     resp = requests.get("http://localhost:8000/flights/search")
     results = resp.json()["results"]
 
+    assert results
+
     provider_counts = Counter()
     providers = []
     for result in results:
