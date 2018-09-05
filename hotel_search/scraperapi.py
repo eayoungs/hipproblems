@@ -1,6 +1,5 @@
 from tornado import gen, ioloop, web
-from searchrunner.scrapers import get_scraper
-
+from hotel_search.scrapers import get_scraper
 
 class ScraperApiHandler(web.RequestHandler):
 
@@ -8,7 +7,7 @@ class ScraperApiHandler(web.RequestHandler):
     def get(self, provider):
         scraper_cls = get_scraper(provider)
         if not scraper_cls:
-            self.set_status(404)
+            self.set_status(400)
             self.write({
                 "error": "Unkown provider",
             })
@@ -16,8 +15,9 @@ class ScraperApiHandler(web.RequestHandler):
 
         scraper = scraper_cls()
         results = yield scraper.run()
+
         self.write({
-            "results": [r.serialize() for r in results],
+            "results": results,
         })
 
 

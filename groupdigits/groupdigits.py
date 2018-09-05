@@ -4,11 +4,10 @@
 
 def group_digits(amount, grouping, separator):
     """Formats an amount according to the grouping strategy in groupings. Groups
-    are separated with a `separator` character.
+    are separated with a `separator` string.
 
     Args:
         amount: Number - The amount to be formatted.
-
         grouping: List[int] - Each element is the number of digits in a group;
             elements with higher indices are further left. An element with value
             -1 means that no further grouping is done. An element with value 0
@@ -49,7 +48,7 @@ BASIC_TESTS = [
     (1000000, [3, 0], " ", "1 000 000"),
     (1000000, [3, -1], ",", "1000,000"),
     (1000000, [3, 3, -1], ",", "1,000,000"),
-    (70000000, [4, 0], " ", "7000 0000"),
+    (700000000, [4, 0], " ", "7 0000 0000"),
     (4154041062, [4, 3, 0], "-", "415-404-1062"),
     (4154041062, [4, 3, -1], "-", "415-404-1062"),
     (10, [1, 1, 1, 1, -1], "! ", "1! 0"),

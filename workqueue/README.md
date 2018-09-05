@@ -17,3 +17,7 @@ We have provided a stub implementation, that enqueues work in Redis, spawns a nu
 The test harness will enqueue work and spawn workers. After a brief period of time, it will try to fetch a result from Redis, and verify that this matches the expected result. When submitting your implementation, verify that it works as expected for varying amounts of workers and work items.
 
 Run `python -m workqueue.workqueue_runner --help` to see valid command line options.
+
+# Important
+
+This problem requires a [Redis](http://redis.io/) server.
