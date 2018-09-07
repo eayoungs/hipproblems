@@ -1,4 +1,6 @@
 from __future__ import print_function
+import json
+
 import tornado.ioloop
 import tornado.web
 
@@ -23,18 +25,17 @@ class MainHandler(BaseHandler):
         self.write("GET some!")
 
     def post(self):
-        self.write({
-                    "messages": [
-                        {
-                            "type": "text",
-                            "text": "Sorry, I don't have any sandwiches, but have a picture instead:"
-                        },
-                        {
-                            "type": "rich",
-                            "html": "<img src='http://i.imgur.com/J9DLQ.png'>"
-                        }
-                    ]
-                })
+        if self.get_body_argument("action") == "join":
+            message = "Hello, " + self.get_body_argument("name") + "!"
+            payload = json.dumps({
+                                    "messages": [
+                                        {
+                                            "type": "text",
+                                            "text": message
+                                        },
+                                    ]
+                                })
+            self.write(payload)
 
 
 def make_app():
