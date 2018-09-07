@@ -39,16 +39,29 @@ class MainHandler(BaseHandler):
 
         else:
             if self.get_body_argument("action") == "message":
-                message = self.get_body_argument("text")
-                payload = json.dumps({
-                                        "messages": [
-                                            {
-                                                "type": "text",
-                                                "text": message
-                                            },
-                                        ]
-                                    })
-                self.write(payload)
+                if "weather" in self.get_body_argument("text"):
+                    message = "weather ?"
+                    payload = json.dumps({
+                                            "messages": [
+                                                {
+                                                    "type": "text",
+                                                    "text": message
+                                                },
+                                            ]
+                                        })
+                    self.write(payload)
+
+                else:
+                    message = self.get_body_argument("text")
+                    payload = json.dumps({
+                                            "messages": [
+                                                {
+                                                    "type": "text",
+                                                    "text": message
+                                                },
+                                            ]
+                                        })
+                    self.write(payload)
 
 
 def make_app():
