@@ -37,6 +37,19 @@ class MainHandler(BaseHandler):
                                 })
             self.write(payload)
 
+        else:
+            if self.get_body_argument("action") == "message":
+                message = self.get_body_argument("text")
+                payload = json.dumps({
+                                        "messages": [
+                                            {
+                                                "type": "text",
+                                                "text": message
+                                            },
+                                        ]
+                                    })
+                self.write(payload)
+
 
 def make_app():
     return tornado.web.Application([
